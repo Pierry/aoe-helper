@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/noContentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="gone">
+
+    <ImageView
+        android:id="@+id/noContentIcon"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:background="@drawable/ic_no_content"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35000002"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/noContentMsg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:lineSpacingExtra="4dp"
+        android:text="Nenhuma informação foi encontrada com esses parâmetros"
+        android:textAlignment="center"
+        android:textColor="#77787B"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/noContentTitle"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/noContentTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Informação não encontrada"
+        android:textColor="#333333"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/noContentIcon"
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>
