@@ -9,8 +9,8 @@ class HomeRepository(val api: IApi) : IHomeRepository {
     val req = api.search(typed = typed)
     val res = req.await()
     when (res.code()) {
-        HttpURLConnection.HTTP_OK -> res.body()
-            ?.let { emit(Result.success(it)) } ?: emit(Result.failure(Exception("User not found")))
+      HttpURLConnection.HTTP_OK -> res.body()
+        ?.let { emit(Result.success(it)) } ?: emit(Result.failure(Exception("User not found")))
       else -> emit(Result.failure(Exception("User not found")))
     }
   }
@@ -22,6 +22,26 @@ class HomeRepository(val api: IApi) : IHomeRepository {
       HttpURLConnection.HTTP_OK -> res.body()
         ?.let { emit(Result.success(it)) } ?: emit(Result.failure(Exception("Match not found")))
       else -> emit(Result.failure(Exception("Match not found")))
+    }
+  }
+
+  override suspend fun matches(steamId: String) = flow {
+    val req = api.history(steamId = steamId)
+    val res = req.await()
+    when (res.code()) {
+      HttpURLConnection.HTTP_OK -> res.body()
+        ?.let { emit(Result.success(it)) } ?: emit(Result.failure(Exception("Match not found")))
+      else -> emit(Result.failure(Exception("Match not found")))
+    }
+  }
+
+  override suspend fun civis() = flow {
+    val req = api.civis()
+    val res = req.await()
+    when (res.code()) {
+      HttpURLConnection.HTTP_OK -> res.body()
+        ?.let { emit(Result.success(it)) } ?: emit(Result.failure(Exception("Civis not found")))
+      else -> emit(Result.failure(Exception("Civis not found")))
     }
   }
 

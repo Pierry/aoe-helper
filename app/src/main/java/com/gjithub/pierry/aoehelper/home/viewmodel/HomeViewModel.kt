@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gjithub.pierry.aoehelper.core.common.SharedPref
 import com.gjithub.pierry.aoehelper.core.domain.Player
 import com.gjithub.pierry.aoehelper.core.domain.Rating
 import com.gjithub.pierry.aoehelper.home.model.IHomeRepository
@@ -21,6 +20,8 @@ class HomeViewModel @Inject constructor(
   val player = MutableLiveData<Player>()
   val error = MutableLiveData<String>()
   val loading = MutableLiveData<Boolean>()
+  val wonPercent = MutableLiveData<Int>()
+  val descriptionCount = MutableLiveData<Double>()
 
   fun search(typed: String) {
     viewModelScope.launch {
@@ -29,7 +30,9 @@ class HomeViewModel @Inject constructor(
         .collect { result ->
           if (result.isSuccess) {
             result.getOrNull()
-              ?.let { item -> myRating.postValue(item.leaderboard.first()) }
+              ?.let { item ->
+                item.leaderboard.firstOrNull()?.let { myRating.postValue(it) }
+              } ?: loading.postValue(false)
           } else {
             result.exceptionOrNull()
               ?.let {
@@ -49,7 +52,52 @@ class HomeViewModel @Inject constructor(
             result.getOrNull()
               ?.let { item ->
                 val opponent = item.match.players.first { it.name != name }
-                player.postValue(opponent)
+                civi(opponent)
+              }
+          } else {
+            result.exceptionOrNull()
+              ?.let {
+                error.postValue(it.message)
+                loading.postValue(false)
+              }
+          }
+        }
+    }
+  }
+
+  fun civi(opponent: Player) {
+    viewModelScope.launch {
+      repository.civis().collect { result ->
+        result.getOrNull()?.let { civis ->
+          val civ = civis.civ.first { it.id == opponent.civ }
+          opponent.civiName = civ.name
+          player.postValue(opponent)
+        }
+      }
+    }
+  }
+
+  fun matches(name: String, steamId: String) {
+    viewModelScope.launch {
+      repository.matches(steamId)
+        .collect { result ->
+          if (result.isSuccess) {
+            result.getOrNull()
+              ?.let { matches ->
+                var count = 0.0
+                var won = 0.0
+                matches.forEach { match ->
+                  if (match.isRanked() && match.isValid()) {
+                    val opponent = match.players.first { it.name != name }
+                    if (!opponent.won) {
+                      won++
+                    }
+                    count++
+                  }
+                }
+                descriptionCount.postValue(count)
+                val average = (won * 100) / count
+                wonPercent.postValue(average.toInt())
                 loading.postValue(false)
               }
           } else {

@@ -1,6 +1,7 @@
 package com.gjithub.pierry.aoehelper.home.view
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,7 @@ class HomeFragment : BaseFragment() {
       if (binding.search.visibility == View.VISIBLE) {
         binding.search.visibility = View.GONE
         binding.ok.visibility = View.GONE
+        binding.search.editText?.text = Editable.Factory.getInstance().newEditable("")
       } else {
         binding.search.visibility = View.VISIBLE
         binding.ok.visibility = View.VISIBLE
@@ -84,8 +86,9 @@ class HomeFragment : BaseFragment() {
       binding.layout.snackbar(error)
     })
     viewModel.player.observe(viewLifecycleOwner, { player ->
-      binding.rating.text = "Rating: ${player.rating}"
+      binding.rating.text = player.rating.toString()
       binding.name.text = player.name
+      binding.civi.text = player.civiName
     })
     viewModel.loading.observe(viewLifecycleOwner, { loading ->
       if (loading) {
@@ -94,11 +97,18 @@ class HomeFragment : BaseFragment() {
         binding.progressBarGen.visibility = View.GONE
       }
     })
+    viewModel.wonPercent.observe(viewLifecycleOwner, {
+      binding.percent.text = "${it.toString()}%"
+    })
+    viewModel.descriptionCount.observe(viewLifecycleOwner, {
+      binding.description.text = "WIN IN LAST\n${it.toInt()} RANKED 1v1 MATCHES"
+    })
   }
 
   private fun getMatch(steamId: String, name: String) {
     lifecycleScope.launchWhenCreated {
       viewModel.match(steamId, name)
+      viewModel.matches(name, steamId)
     }
   }
 }
